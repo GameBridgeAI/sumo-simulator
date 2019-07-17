@@ -1,0 +1,10 @@
+Package Instructions for Robot activation:
+
+
+Python version: 3.5.3
+
+rypc version: 3.3.0
+
+Robot package:
+
+ev3dev2
