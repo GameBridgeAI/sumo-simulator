@@ -8,3 +8,13 @@ rypc version: 3.3.0
 Robot package:
 
 ev3dev2
+
+
+Start server:
+
+sudo rpyc_classic.py --port=80
+
+
+1 Rotation = 17.5 cm!
+2 = 35cm.
+
