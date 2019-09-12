@@ -1,4 +1,8 @@
+import sys
+import time
+
 import pathos
+from pathos.connection import Pipe
 
 ROBOT_IP = '127.0.0.1'
 PYTHON3_PATH = '~/.pyenv/shims/python3.7'
@@ -42,8 +46,12 @@ def run_classic_server_file():
 
 
 def run_server_file(filename):
-    pid = run_python_file(filename, False)
-    print(f'server running with pid {pid}')
+    pipe = Pipe(ROBOT_IP)
+    pipe(command=f'{PYTHON3_PATH} {filename}')
+    pipe.launch()
+    while True:
+        time.sleep(0.1)
+        print(str(pipe._stdout.readline(),'utf-8'), end='')
 
 
 def home_made_kill_all_processes_with_filename(filename):
@@ -54,7 +62,7 @@ def home_made_kill_all_processes_with_filename(filename):
 # upload_file('./script/print_hostname.py')
 #
 # # 0.2 test run file
-# run_server_file('print_hostname.py')
+# run_server_file('~/print_hostname.py')
 #
 # # 1. install requirements
 # install_requirements()
@@ -63,10 +71,10 @@ def home_made_kill_all_processes_with_filename(filename):
 # upload_file('prod_server.py')
 #
 # # 3. run production server
-# run_server_file('./prod_server.py')
+run_server_file('~/prod_server.py')
 
 # 3.1 run classic server for quick dev. Does not work.
 # run_classic_server_file()
 
 # # 4. kill server
-# home_made_kill_all_processes_with_filename('./prod_server.py')
+# home_made_kill_all_processes_with_filename('prod_server.py')
