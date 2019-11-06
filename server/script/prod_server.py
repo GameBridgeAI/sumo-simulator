@@ -69,11 +69,11 @@ class QueuedTaskRunner(object):
                     target_func = getattr(self, "handle_" + cmd_name, None)
 
                     if target_func is not None:
-                        print(f'run sensor cmd {cmd_name}')
+                        print('run sensor cmd ' + cmd_name)
                         self.task_thread = ThreadWithException(target=target_func, args=cmd_to_run[1:])
                         self.task_thread.start()
                     else:
-                        print(f'cannot find handler for cmd {cmd_name}, skipping')
+                        print('cannot find handler for cmd ' + cmd_name + ', skipping')
 
     def try_terminate_current_task(self):
         if self.task_thread is None:
@@ -146,6 +146,7 @@ class WheelController(QueuedTaskRunner):  # should only create one instance of t
 class MyService(rpyc.Service):
     def __init__(self):
         self.distance_sensor = None
+        self.wheel_controller = None
 
     def on_connect(self, conn):
         pass
@@ -157,14 +158,20 @@ class MyService(rpyc.Service):
         if self.distance_sensor is not None:
             self.distance_sensor.stop()
             self.distance_sensor = None
+        if self.wheel_controller is not None:
+            self.wheel_controller.stop()
+            self.wheel_controller = None
 
     def exposed_init(self):
         self.clear_sensor_if_exist()
         self.distance_sensor = DistanceSensor()
+        self.wheel_controller = WheelController()
 
     def exported_get_distance_sensor(self):
         return self.distance_sensor
 
+    def exported_get_wheel_controller(self):
+        return self.wheel_controller
 
 if __name__ == "__main__":
     from rpyc.utils.server import ThreadedServer

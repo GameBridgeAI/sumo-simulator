@@ -11,19 +11,19 @@ PIP3_PATH = '~/.pyenv/shims/pip3'
 
 def install_requirements():
     upload_file('requirements.txt', False)
-    s = pathos.core.execute(f'{PIP3_PATH} install -r requirements.txt', host=ROBOT_IP)
+    s = pathos.core.execute(PIP3_PATH + ' install -r requirements.txt', host=ROBOT_IP)
     print(s.response())
 
 
 def upload_file(filename, script=True):
-    dest = f'{ROBOT_IP}:~/{filename}'
+    dest = ROBOT_IP + ':~/' + filename
     mid_path = 'script/' if script else ''
-    print(f'copying from ./{mid_path}{filename} to: {dest}')
-    pathos.core.copy(f'./{mid_path}{filename}', destination=dest)
+    print('copying from ./' + mid_path + filename + ' to: '+ dest)
+    pathos.core.copy('./' + mid_path + filename, destination=dest)
 
 
 def run_python_file(filename, print_response=True):
-    s = pathos.core.execute(f'{PYTHON3_PATH} {filename}', host=ROBOT_IP)
+    s = pathos.core.execute(PYTHON3_PATH + ' ' + filename, host=ROBOT_IP)
     if print_response:
         print(s.response())
     return s.pid()
@@ -42,12 +42,12 @@ def kill_remote_process(pid, include_children=True):
 # this does not work.
 def run_classic_server_file():
     pid = run_python_file('./rpyc_classic.py --port=16666')
-    print(f'server running with pid {pid}')
+    print('server running with pid ' + pid)
 
 
 def run_server_file(filename):
     pipe = Pipe(ROBOT_IP)
-    pipe(command=f'{PYTHON3_PATH} {filename}')
+    pipe(command=PYTHON3_PATH + filename)
     pipe.launch()
     while True:
         time.sleep(0.1)
@@ -55,7 +55,7 @@ def run_server_file(filename):
 
 
 def home_made_kill_all_processes_with_filename(filename):
-    pathos.core.execute(f'pkill -f {filename}', ROBOT_IP)
+    pathos.core.execute('pkill -f ' + filename, ROBOT_IP)
 
 
 # # 0.1 test upload file
